@@ -206,3 +206,18 @@
   opacity: 1;
   box-shadow: 0 0 10px rgba(29, 185, 84, 0.5);
 }
+
+.option {
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+  padding: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.option.selected {
+  border-color: #1DB954;
+  background-color: rgba(29, 185, 84, 0.1);
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(29, 185, 84, 0.3);
+}
