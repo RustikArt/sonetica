@@ -1,103 +1,125 @@
-import { useState } from 'react';
+// --- Constantes pour l'API Spotify ---
+const SPOTIFY_CLIENT_ID = '09ab22337818418b866d5405fb600550'; // C'est le bon ID Client :)
+const SPOTIFY_REDIRECT_URI = 'https://sonetica-chi.vercel.app/callback'; // URL de production
+const SPOTIFY_AUTH_ENDPOINT = 'https://accounts.spotify.com/authorize';
+const SPOTIFY_SCOPES = [
+  'user-read-private',
+  'user-read-email',
+  'playlist-modify-public',
+  'playlist-modify-private'
+];
 
-interface SpotifyIntegrationProps {
-  onAuthenticated: (accessToken: string) => void;
-  onError: (error: string) => void;
-}
+// Génère l'URL d'authentification Spotify
+export const getSpotifyAuthUrl = () => {
+  const url = new URL(SPOTIFY_AUTH_ENDPOINT);
+  url.searchParams.append('client_id', SPOTIFY_CLIENT_ID);
+  url.searchParams.append('redirect_uri', SPOTIFY_REDIRECT_URI);
+  url.searchParams.append('scope', SPOTIFY_SCOPES.join(' '));
+  url.searchParams.append('response_type', 'token');
+  url.searchParams.append('show_dialog', 'true');
+  return url.toString();
+};
 
-export default function SpotifyIntegration({ onAuthenticated, onError }: SpotifyIntegrationProps) {
-  const [isAuthenticating, setIsAuthenticating] = useState(false);
-  const [accessToken, setAccessToken] = useState<string | null>(null);
-  
-  // Simuler l'authentification Spotify (à remplacer par l'intégration réelle)
-  const authenticateWithSpotify = async () => {
-    setIsAuthenticating(true);
-    
-    try {
-      // Simulation d'une requête d'authentification à l'API Spotify
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Simuler un token d'accès
-      const mockToken = 'spotify-mock-token-' + Math.random().toString(36).substring(2, 15);
-      setAccessToken(mockToken);
-      onAuthenticated(mockToken);
-    } catch (error) {
-      onError("Erreur lors de l'authentification Spotify");
-      console.error('Spotify auth error:', error);
-    } finally {
-      setIsAuthenticating(false);
-    }
-  };
-  
-  // Simuler la création d'une playlist Spotify
-  const createSpotifyPlaylist = async (name: string, description: string, trackUris: string[]) => {
-    if (!accessToken) {
-      onError("Vous devez vous connecter à Spotify d'abord");
-      return null;
-    }
-    
-    try {
-      // Simulation d'une requête de création de playlist
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Simuler un ID de playlist
-      const playlistId = 'playlist-' + Math.random().toString(36).substring(2, 10);
-      
-      return {
-        id: playlistId,
+// Extrait le token d'accès de l'URL après redirection et le stocke dans le localStorage
+export const getAccessTokenFromUrl = (): string | null => {
+  const hash = window.location.hash.substring(1);
+  const params = new URLSearchParams(hash);
+  const token = params.get('access_token');
+  if (token) {
+    localStorage.setItem('spotify_access_token', token);
+  }
+  return token;
+};
+
+// Récupère le token depuis le localStorage
+export const getStoredAccessToken = (): string | null => {
+  return localStorage.getItem('spotify_access_token');
+};
+
+// Déconnecte l'utilisateur (supprime le token)
+export const logoutSpotify = () => {
+  localStorage.removeItem('spotify_access_token');
+};
+
+// Récupère l'ID utilisateur Spotify
+export const getSpotifyUserId = async (token: string): Promise<string | null> => {
+  try {
+    const response = await fetch('https://api.spotify.com/v1/me', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    const data = await response.json();
+    return data.id || null;
+  } catch (error) {
+    console.error('Erreur lors de la récupération de l\'ID utilisateur Spotify:', error);
+    return null;
+  }
+};
+
+// Recherche des morceaux
+export const searchTracks = async (query: string, token: string) => {
+  try {
+    const response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=10`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    const data = await response.json();
+    return data.tracks?.items || [];
+  } catch (error) {
+    console.error('Erreur lors de la recherche de morceaux:', error);
+    return [];
+  }
+};
+
+// Crée une playlist
+export const createPlaylist = async (
+  userId: string,
+  name: string,
+  description: string,
+  token: string
+) => {
+  try {
+    const response = await fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
         name,
         description,
-        external_urls: {
-          spotify: `https://open.spotify.com/playlist/${playlistId}`
-        },
-        tracks: {
-          total: trackUris.length
-        }
-      };
-    } catch (error) {
-      onError("Erreur lors de la création de la playlist");
-      console.error('Spotify create playlist error:', error);
-      return null;
-    }
-  };
-  
-  // Simuler la recherche de morceaux sur Spotify
-  const searchTracks = async (query: string, limit: number = 10) => {
-    if (!accessToken) {
-      onError("Vous devez vous connecter à Spotify d'abord");
-      return [];
-    }
-    
-    try {
-      // Simulation d'une requête de recherche
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Données de démonstration pour les résultats de recherche
-      const mockResults = [
-        { id: 'track1', name: 'Blinding Lights', artists: [{ name: 'The Weeknd' }], duration_ms: 200000, uri: 'spotify:track:track1' },
-        { id: 'track2', name: 'Don\'t Start Now', artists: [{ name: 'Dua Lipa' }], duration_ms: 183000, uri: 'spotify:track:track2' },
-        { id: 'track3', name: 'Watermelon Sugar', artists: [{ name: 'Harry Styles' }], duration_ms: 174000, uri: 'spotify:track:track3' },
-        { id: 'track4', name: 'Dance Monkey', artists: [{ name: 'Tones and I' }], duration_ms: 210000, uri: 'spotify:track:track4' },
-        { id: 'track5', name: 'Physical', artists: [{ name: 'Dua Lipa' }], duration_ms: 193000, uri: 'spotify:track:track5' },
-      ];
-      
-      // Filtrer les résultats en fonction de la requête
-      return mockResults.filter(track => 
-        track.name.toLowerCase().includes(query.toLowerCase()) || 
-        track.artists.some(artist => artist.name.toLowerCase().includes(query.toLowerCase()))
-      ).slice(0, limit);
-    } catch (error) {
-      onError("Erreur lors de la recherche de morceaux");
-      console.error('Spotify search tracks error:', error);
-      return [];
-    }
-  };
-  
-  return {
-    isAuthenticating,
-    accessToken,
-    authenticateWithSpotify,
-    createSpotifyPlaylist,
-    searchTracks
-  };
-}
+        public: false
+      })
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('Erreur lors de la création de la playlist:', error);
+    return null;
+  }
+};
+
+// Ajoute des morceaux à une playlist
+export const addTracksToPlaylist = async (
+  playlistId: string,
+  trackUris: string[],
+  token: string
+) => {
+  try {
+    const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        uris: trackUris
+      })
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('Erreur lors de l\'ajout de morceaux à la playlist:', error);
+    return null;
+  }
+};
