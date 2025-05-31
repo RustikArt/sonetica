@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import QuestionnaireForm from './components/QuestionnaireForm';
 import AuthForm from './components/AuthForm';
@@ -7,6 +7,21 @@ import ShareModal from './components/ShareModal';
 import AdminPanel from './components/AdminPanel';
 import './styles/spotify-theme.css';
 import './styles/animations.css';
+
+// 1. 🧱 Playlist par défaut
+const defaultPlaylist = {
+  id: 'default-playlist',
+  title: 'Découverte Sonetica',
+  description: 'Une sélection de titres pour vous faire découvrir Sonetica',
+  tracks: [
+    { id: '1', title: 'Titre populaire 1', artist: 'Artiste 1', duration: '3:45' },
+    { id: '2', title: 'Titre populaire 2', artist: 'Artiste 2', duration: '4:12' },
+    { id: '3', title: 'Titre populaire 3', artist: 'Artiste 3', duration: '3:30' },
+    { id: '4', title: 'Titre populaire 4', artist: 'Artiste 4', duration: '5:01' },
+    { id: '5', title: 'Titre populaire 5', artist: 'Artiste 5', duration: '3:22' },
+  ],
+  coverImage: 'https://via.placeholder.com/300x300?text=Sonetica'
+};
 
 function App() {
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
@@ -20,18 +35,26 @@ function App() {
   const [showAdmin, setShowAdmin] = useState(false);
   const [, setIsSurpriseMode] = useState(false);
 
+  // 2. 🎯 State pour les playlists utilisateur
+  const [userPlaylists, setUserPlaylists] = useState<any[]>([]);
+  // Ajoute ce state pour la playlist sélectionnée :
+  const [selectedPlaylist, setSelectedPlaylist] = useState<any | null>(null);
+
+  // 3. ⚡ Injecte la playlist par défaut si vide
+  useEffect(() => {
+    if (userPlaylists.length === 0) {
+      setUserPlaylists([defaultPlaylist]);
+    }
+  }, []);
+
   const toggleTheme = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark');
-    // Appliquer la classe au body pour les styles globaux
     document.body.className = theme === 'dark' ? 'light' : 'dark';
   };
 
   const handleQuestionnaireComplete = (answers: Record<number, any>) => {
-    console.log('Questionnaire completed with answers:', answers);
-    // Ici, nous traiterons les réponses et générerons la playlist
     setShowQuestionnaire(false);
     setShowPlaylist(true);
-    // Rediriger vers la page de résultats ou afficher la playlist générée
   };
 
   const startQuestionnaire = (duration: 'quick' | 'medium' | 'long', surprise: boolean = false) => {
@@ -51,43 +74,27 @@ function App() {
   };
 
   const handleSaveToSpotify = () => {
-    // Intégration avec Spotify pour sauvegarder la playlist
     alert('Cette fonctionnalité sera disponible prochainement !');
   };
 
   const handleRemoveTrack = (id: string) => {
-    // Supprimer un morceau de la playlist
-    console.log('Removing track:', id);
+    setUserPlaylists((prev) =>
+      prev.map((playlist) =>
+        playlist.id === defaultPlaylist.id
+          ? { ...playlist, tracks: playlist.tracks.filter((track: any) => track.id !== id) }
+          : playlist
+      )
+    );
   };
 
   const handleNavigate = (page: 'home' | 'library' | 'create' | 'discover') => {
     setActivePage(page);
-    
-    // Réinitialiser les états en fonction de la navigation
     setShowQuestionnaire(page === 'create');
     setShowPlaylist(false);
     setShowAdmin(false);
-    
-    // Si on navigue vers "Créer", on peut optionnellement démarrer le questionnaire
     if (page === 'create' && !showQuestionnaire) {
       setShowQuestionnaire(true);
     }
-  };
-
-  // Données de démonstration pour la playlist
-  const demoPlaylist = {
-    title: "Ma playlist énergique",
-    description: "Une playlist parfaite pour se motiver et rester énergique toute la journée. Mélange de pop, rock et électro pour garder le rythme.",
-    tracks: [
-      { id: "1", title: "Higher Power", artist: "Coldplay", duration: "3:26" },
-      { id: "2", title: "Don't Start Now", artist: "Dua Lipa", duration: "3:03" },
-      { id: "3", title: "Blinding Lights", artist: "The Weeknd", duration: "3:20" },
-      { id: "4", title: "Physical", artist: "Dua Lipa", duration: "3:42" },
-      { id: "5", title: "Dance Monkey", artist: "Tones and I", duration: "3:29" },
-      { id: "6", title: "Levitating", artist: "Dua Lipa ft. DaBaby", duration: "3:23" },
-      { id: "7", title: "Save Your Tears", artist: "The Weeknd", duration: "3:35" },
-      { id: "8", title: "Watermelon Sugar", artist: "Harry Styles", duration: "2:54" }
-    ]
   };
 
   // Données de démonstration pour le panel admin
@@ -104,13 +111,6 @@ function App() {
     { id: "3", title: "Workout intense", creator: "fitnessfreak", createdAt: "2025-05-20", views: 567, likes: 124 },
     { id: "4", title: "Détente du dimanche", creator: "chillvibes", createdAt: "2025-05-22", views: 189, likes: 56 },
     { id: "5", title: "Road trip", creator: "traveler23", createdAt: "2025-05-25", views: 423, likes: 97 }
-  ];
-
-  // Données de démonstration pour la bibliothèque
-  const userPlaylists = [
-    { id: "1", title: "Mes favoris", description: "Une collection de mes morceaux préférés", tracks: 12, createdAt: "2025-05-10" },
-    { id: "2", title: "Pour courir", description: "Playlist dynamique pour mes sessions de jogging", tracks: 8, createdAt: "2025-05-15" },
-    { id: "3", title: "Concentration", description: "Musique calme pour travailler efficacement", tracks: 15, createdAt: "2025-05-20" }
   ];
 
   // Données de démonstration pour la découverte
@@ -231,37 +231,28 @@ function App() {
           {activePage === 'library' && (
             <div className="page-transition-enter-active">
               <h1 className="text-3xl font-bold mb-6 fade-in">Ma bibliothèque</h1>
-              
-              {user ? (
-                <div className="playlist-grid fade-in" style={{ animationDelay: '0.2s' }}>
-                  {userPlaylists.map(playlist => (
-                    <div key={playlist.id} className="playlist-card hover-scale" onClick={() => setShowPlaylist(true)}>
-                      <div className="playlist-card-image bg-gray-700"></div>
-                      <div className="playlist-card-title">{playlist.title}</div>
-                      <div className="playlist-card-description">{playlist.description}</div>
-                      <div className="mt-2 text-sm text-gray-400">{playlist.tracks} titres</div>
-                    </div>
-                  ))}
-                  
-                  <div 
-                    className="playlist-card hover-scale flex flex-col items-center justify-center cursor-pointer"
-                    onClick={() => handleNavigate('create')}
+              <div className="playlist-grid fade-in" style={{ animationDelay: '0.2s' }}>
+                {/* 4. 🖼️ Affichage des playlists */}
+                {userPlaylists.map((playlist) => (
+                  <div
+                    key={playlist.id}
+                    className="playlist-card hover-scale"
+                    onClick={() => {
+                      setSelectedPlaylist(playlist);
+                      setShowPlaylist(true);
+                    }}
                   >
-                    <div className="w-16 h-16 rounded-full bg-spotify-green flex items-center justify-center text-3xl mb-4">+</div>
-                    <div className="text-center font-bold">Créer une nouvelle playlist</div>
+                    <Playlist key={playlist.id} {...playlist} />
                   </div>
+                ))}
+                <div 
+                  className="playlist-card hover-scale flex flex-col items-center justify-center cursor-pointer"
+                  onClick={() => handleNavigate('create')}
+                >
+                  <div className="w-16 h-16 rounded-full bg-spotify-green flex items-center justify-center text-3xl mb-4">+</div>
+                  <div className="text-center font-bold">Créer une nouvelle playlist</div>
                 </div>
-              ) : (
-                <div className="text-center py-12 fade-in">
-                  <p className="text-xl mb-6">Connectez-vous pour accéder à votre bibliothèque de playlists</p>
-                  <button 
-                    className="btn-primary hover-scale"
-                    onClick={() => setShowAuth(true)}
-                  >
-                    Connexion
-                  </button>
-                </div>
-              )}
+              </div>
             </div>
           )}
 
@@ -314,12 +305,12 @@ function App() {
             </div>
           )}
 
-          {showPlaylist && (
+          {showPlaylist && selectedPlaylist && (
             <div className="page-transition-enter-active">
               <Playlist 
-                title={demoPlaylist.title}
-                description={demoPlaylist.description}
-                tracks={demoPlaylist.tracks}
+                title={selectedPlaylist.title}
+                description={selectedPlaylist.description}
+                tracks={selectedPlaylist.tracks}
                 editable={true}
                 onSaveToSpotify={handleSaveToSpotify}
                 onShare={handleSharePlaylist}
@@ -387,10 +378,10 @@ function App() {
       </footer>
 
       {/* Modales */}
-      {showShareModal && (
+      {showShareModal && selectedPlaylist && (
         <ShareModal
-          playlistTitle={demoPlaylist.title}
-          playlistUrl="https://sonetica.app/playlist/123456"
+          playlistTitle={selectedPlaylist.title}
+          playlistUrl={`https://sonetica.app/playlist/${selectedPlaylist.id}`}
           spotifyLink="https://open.spotify.com/playlist/123456"
           onClose={() => setShowShareModal(false)}
         />
