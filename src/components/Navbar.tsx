@@ -56,11 +56,13 @@ export default function Navbar({
         >
           Découvrir
         </div>
-        <DialogTrigger asChild>
-          <button className="navbar-item nav-link" onClick={() => setContactOpen(true)}>
-            Contact
-          </button>
-        </DialogTrigger>
+        <button
+          className="navbar-item nav-link"
+          onClick={() => setContactOpen(true)}
+          type="button"
+        >
+          Contact
+        </button>
       </div>
       
       <div className="navbar-controls">
