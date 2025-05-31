@@ -1,5 +1,85 @@
 import { useState } from 'react';
 
+// Types pour les préférences musicales
+export interface MusicPreferences {
+  genres: string[];
+  mood: string;
+  tempo: string;
+  occasion: string;
+  artists: string[];
+  additionalInfo: string;
+}
+
+// Fonction pour analyser les réponses du questionnaire
+export const analyzeResponses = (responses: Record<string, any>): MusicPreferences => {
+  const preferences: MusicPreferences = {
+    genres: [],
+    mood: '',
+    tempo: '',
+    occasion: '',
+    artists: [],
+    additionalInfo: ''
+  };
+
+  if (responses.genres) {
+    preferences.genres = Array.isArray(responses.genres) ? responses.genres : [responses.genres];
+  }
+  if (responses.mood) {
+    preferences.mood = responses.mood;
+  }
+  if (responses.tempo) {
+    preferences.tempo = responses.tempo;
+  }
+  if (responses.occasion) {
+    preferences.occasion = responses.occasion;
+  }
+  if (responses.artists) {
+    preferences.artists = Array.isArray(responses.artists) ? responses.artists : [responses.artists];
+  }
+  if (responses.additionalInfo) {
+    preferences.additionalInfo = responses.additionalInfo;
+  }
+
+  return preferences;
+};
+
+// Fonction pour générer une requête pour l'API d'IA
+export const generateAIPrompt = (preferences: MusicPreferences): string => {
+  return `Génère une playlist musicale avec les caractéristiques suivantes:
+    - Genres: ${preferences.genres.join(', ')}
+    - Ambiance: ${preferences.mood}
+    - Tempo: ${preferences.tempo}
+    - Occasion: ${preferences.occasion}
+    - Artistes similaires à: ${preferences.artists.join(', ')}
+    - Informations supplémentaires: ${preferences.additionalInfo}
+    
+    Format de réponse souhaité: une liste de 10 à 15 chansons avec le titre et l'artiste pour chaque morceau.`;
+};
+
+// Fonction pour appeler l'API d'IA (exemple avec OpenAI)
+export const generatePlaylistWithAI = async (
+  prompt: string
+): Promise<Array<{ title: string; artist: string }>> => {
+  // Simulation pour le moment - à remplacer par un véritable appel API
+  console.log("Prompt envoyé à l'IA:", prompt);
+
+  // Simulation d'une réponse
+  return [
+    { title: "Titre de chanson 1", artist: "Artiste 1" },
+    { title: "Titre de chanson 2", artist: "Artiste 2" },
+    // etc.
+  ];
+};
+
+// Fonction principale pour générer une playlist
+export const generatePlaylist = async (
+  responses: Record<string, any>
+): Promise<Array<{ title: string; artist: string }>> => {
+  const preferences = analyzeResponses(responses);
+  const prompt = generateAIPrompt(preferences);
+  return await generatePlaylistWithAI(prompt);
+}
+
 interface AIGeneratorProps {
   userAnswers: Record<number, any>;
   onGeneratePlaylist: (playlist: any) => void;
