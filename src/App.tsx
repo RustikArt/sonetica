@@ -158,7 +158,7 @@ function App() {
                     className="btn-secondary hover-scale"
                     onClick={() => startQuestionnaire('quick', true)}
                   >
-                    <span className="surprise-animation">🎲</span> Mode surprise
+                    <span className="surprise-animation"></span> Mode surprise
                   </button>
                 </div>
                 

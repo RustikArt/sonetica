@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 
 interface NavbarProps {
   theme: 'light' | 'dark';
@@ -22,6 +23,7 @@ export default function Navbar({
   onNavigate
 }: NavbarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [contactOpen, setContactOpen] = useState(false);
   
   return (
     <div className="navbar-container theme-transition">
@@ -55,6 +57,11 @@ export default function Navbar({
           Découvrir
         </div>
       </div>
+      <li>
+  <DialogTrigger asChild>
+    <button className="nav-link" onClick={() => setContactOpen(true)}>Contact</button>
+  </DialogTrigger>
+      </li>
       
       <div className="navbar-controls">
         <label className="theme-switch mr-4">
@@ -115,5 +122,26 @@ export default function Navbar({
         )}
       </div>
     </div>
-  );
-}
+  )}
+    <Dialog open={contactOpen} onOpenChange={setContactOpen}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Contactez-nous</DialogTitle>
+        </DialogHeader>
+        <form className="contact-form">
+          <div className="form-group">
+            <label htmlFor="name">Nom</label>
+            <input type="text" id="name" className="form-input" />
+          </div>
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
+            <input type="email" id="email" className="form-input" />
+          </div>
+          <div className="form-group">
+            <label htmlFor="message">Message</label>
+            <textarea id="message" className="form-textarea" rows={5}></textarea>
+          </div>
+          <button type="submit" className="submit-button">Envoyer</button>
+        </form>
+      </DialogContent>
+    </Dialog>
