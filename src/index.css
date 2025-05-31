@@ -1,0 +1,138 @@
+/* Styles globaux pour l'application Sonetica */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #8b5cf6;
+  --primary-hover: #7c3aed;
+  --dark-bg: #111827;
+  --dark-card: #1f2937;
+  --light-bg: #f3f4f6;
+  --light-card: #ffffff;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.logo {
+  height: 2.5rem;
+  will-change: filter;
+  transition: filter 300ms;
+}
+
+.progress-dots {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+.progress-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin: 0 4px;
+  transition: background-color 0.3s ease;
+}
+
+.progress-dot.active {
+  background-color: var(--primary);
+}
+
+.progress-dot.inactive {
+  background-color: #d1d5db;
+}
+
+.dark .progress-dot.inactive {
+  background-color: #4b5563;
+}
+
+.playlist-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s ease;
+}
+
+.playlist-item:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.dark .playlist-item:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.help-bubble {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background-color: var(--primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.help-bubble:hover {
+  transform: scale(1.1);
+}
+
+.confirmation-popup {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  background-color: var(--primary);
+  color: white;
+  animation: fadeInOut 3s forwards;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(-20px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-20px); }
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background-color: var(--primary);
+  color: white;
+}

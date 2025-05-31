@@ -1,0 +1,184 @@
+/* Animations pour Sonetica - Inspiré de Spotify */
+
+/* Transitions générales */
+.transition-all {
+  transition: all 0.3s ease;
+}
+
+/* Animation de fade pour les éléments qui apparaissent/disparaissent */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(10px); }
+}
+
+.fade-in {
+  animation: fadeIn 0.4s ease forwards;
+}
+
+.fade-out {
+  animation: fadeOut 0.3s ease forwards;
+}
+
+/* Animation pour les cartes et éléments cliquables */
+.hover-scale {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-scale:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Animation pour le changement de thème */
+.theme-transition {
+  transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
+}
+
+/* Animation pour la barre de progression */
+@keyframes progressPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.progress-dot.active {
+  animation: progressPulse 1s ease infinite;
+}
+
+/* Animation pour les boutons */
+.btn-animation {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.btn-animation:after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.3);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%);
+  transform-origin: 50% 50%;
+}
+
+.btn-animation:focus:not(:active)::after {
+  animation: ripple 1s ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0, 0);
+    opacity: 0.5;
+  }
+  20% {
+    transform: scale(25, 25);
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(40, 40);
+  }
+}
+
+/* Animation pour la navbar */
+.navbar-item {
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.navbar-item:after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -4px;
+  left: 0;
+  background-color: #1DB954; /* Couleur Spotify */
+  transition: width 0.3s ease;
+}
+
+.navbar-item:hover:after,
+.navbar-item.active:after {
+  width: 100%;
+}
+
+/* Animation pour les playlists */
+.playlist-item {
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.playlist-item:hover {
+  transform: translateX(4px);
+}
+
+/* Animation pour le mode surprise */
+@keyframes surpriseRotate {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(10deg); }
+  75% { transform: rotate(-10deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.surprise-animation {
+  display: inline-block;
+  animation: surpriseRotate 0.5s ease;
+}
+
+/* Animation pour la confirmation */
+@keyframes confirmationPop {
+  0% { transform: scale(0.8); opacity: 0; }
+  50% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.confirmation-animation {
+  animation: confirmationPop 0.4s ease forwards;
+}
+
+/* Animation pour le chargement */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-spinner {
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top: 3px solid #1DB954;
+  width: 24px;
+  height: 24px;
+  animation: spin 1s linear infinite;
+}
+
+/* Animation pour les transitions de page */
+.page-transition-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.page-transition-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.4s, transform 0.4s;
+}
+
+.page-transition-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.page-transition-exit-active {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 0.3s, transform 0.3s;
+}
