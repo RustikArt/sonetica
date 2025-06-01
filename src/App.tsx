@@ -7,6 +7,7 @@ import ShareModal from './components/ShareModal';
 import AdminPanel from './components/AdminPanel';
 import './styles/spotify-theme.css';
 import './styles/animations.css';
+import { generatePlaylist } from './lib/AIGenerator';
 
 // 1. 🧱 Playlist par défaut
 const defaultPlaylist = {
@@ -52,8 +53,22 @@ function App() {
     document.body.className = theme === 'dark' ? 'light' : 'dark';
   };
 
-  const handleQuestionnaireComplete = (answers: Record<number, any>) => {
+  const handleQuestionnaireComplete = async (responses: Record<number, any>) => {
     setShowQuestionnaire(false);
+
+    // Génère la playlist personnalisée avec l'IA
+    const aiTracks = await generatePlaylist(responses);
+
+    // Crée un objet playlist à partir des réponses et des morceaux générés
+    const newPlaylist = {
+      id: `ai-playlist-${Date.now()}`,
+      title: "Playlist personnalisée",
+      description: "Playlist générée selon vos réponses.",
+      tracks: aiTracks,
+      coverImage: 'https://via.placeholder.com/300x300?text=Playlist+IA'
+    };
+
+    setSelectedPlaylist(newPlaylist);
     setShowPlaylist(true);
   };
 
