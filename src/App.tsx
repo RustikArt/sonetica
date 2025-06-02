@@ -1,5 +1,16 @@
 import { useState, useEffect } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
+import LibraryPage from './pages/LibraryPage';
+import CreatePage from './pages/CreatePage';
+import DiscoverPage from './pages/DiscoverPage';
+import ContactPage from './pages/ContactPage';
+import LegalPage from './pages/LegalPage';
+import PrivacyPage from './pages/PrivacyPage';
+import NotFoundPage from './pages/NotFoundPage';
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 import QuestionnaireForm from './components/QuestionnaireForm';
 import AuthForm from './components/AuthForm';
 import Playlist from './components/Playlist';
@@ -142,7 +153,7 @@ function App() {
   document.body.className = theme;
 
   return (
-    <div className="main-container">
+    <div className="flex flex-col min-h-screen">
       <Navbar 
         theme={theme}
         onToggleTheme={toggleTheme}
@@ -153,245 +164,20 @@ function App() {
         activePage={activePage}
         onNavigate={handleNavigate}
       />
-
-      <div className="content-container">
-        <div className="main-content">
-          {activePage === 'home' && !showQuestionnaire && !showPlaylist && !showAuth && !showAdmin && (
-            <div className="page-transition-enter-active">
-              <section className="max-w-3xl mx-auto text-center mb-12 fade-in">
-                <h2 className="text-4xl font-bold mb-4">Créez des playlists personnalisées</h2>
-                <p className="text-xl mb-8">Répondez à quelques questions et laissez notre IA créer la playlist parfaite pour chaque moment.</p>
-                
-                <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
-                  <button 
-                    className="btn-primary hover-scale"
-                    onClick={() => startQuestionnaire('quick')}
-                  >
-                    Commencer
-                  </button>
-                  <button 
-                    className="btn-secondary hover-scale"
-                    onClick={() => startQuestionnaire('quick', true)}
-                  >
-                    <span className="surprise-animation"></span> Mode surprise
-                  </button>
-                </div>
-                
-                <div className="flex justify-center gap-4 mt-4">
-                  <button 
-                    className="btn-secondary"
-                    onClick={() => startQuestionnaire('quick')}
-                  >
-                    Rapide (2 min)
-                  </button>
-                  <button 
-                    className="btn-secondary"
-                    onClick={() => startQuestionnaire('medium')}
-                  >
-                    Moyen (5 min)
-                  </button>
-                  <button 
-                    className="btn-secondary"
-                    onClick={() => startQuestionnaire('long')}
-                  >
-                    Complet (10 min)
-                  </button>
-                </div>
-              </section>
-
-              <section className="grid md:grid-cols-3 gap-8 mb-12 fade-in" style={{ animationDelay: '0.2s' }}>
-                <div className="card hover-scale">
-                  <h3 className="text-xl font-bold mb-3">Questionnaire personnalisé</h3>
-                  <p>Répondez à des questions simples sur vos goûts et besoins musicaux.</p>
-                </div>
-                <div className="card hover-scale">
-                  <h3 className="text-xl font-bold mb-3">IA intelligente</h3>
-                  <p>Notre IA analyse vos réponses pour créer une playlist parfaitement adaptée.</p>
-                </div>
-                <div className="card hover-scale">
-                  <h3 className="text-xl font-bold mb-3">Partagez sur Spotify</h3>
-                  <p>Publiez directement sur Spotify ou partagez avec vos amis.</p>
-                </div>
-              </section>
-
-              <section className="card mb-12 fade-in" style={{ animationDelay: '0.4s' }}>
-                <h2 className="text-2xl font-bold mb-4">Comment ça marche ?</h2>
-                <div className="flex flex-col md:flex-row gap-6">
-                  <div className="flex-1">
-                    <div className="flex items-center mb-2">
-                      <div className="w-8 h-8 rounded-full flex items-center justify-center mr-3 bg-spotify-green text-white">1</div>
-                      <h3 className="font-bold">Répondez aux questions</h3>
-                    </div>
-                    <p className="ml-11">Choisissez la durée du questionnaire et répondez à des questions sur vos préférences musicales.</p>
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center mb-2">
-                      <div className="w-8 h-8 rounded-full flex items-center justify-center mr-3 bg-spotify-green text-white">2</div>
-                      <h3 className="font-bold">L'IA crée votre playlist</h3>
-                    </div>
-                    <p className="ml-11">Notre intelligence artificielle analyse vos réponses et génère une playlist personnalisée.</p>
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center mb-2">
-                      <div className="w-8 h-8 rounded-full flex items-center justify-center mr-3 bg-spotify-green text-white">3</div>
-                      <h3 className="font-bold">Partagez et profitez</h3>
-                    </div>
-                    <p className="ml-11">Publiez sur Spotify, enregistrez dans Sonetica ou partagez avec vos amis.</p>
-                  </div>
-                </div>
-              </section>
-            </div>
-          )}
-
-          {activePage === 'library' && (
-            <div className="page-transition-enter-active">
-              <h1 className="text-3xl font-bold mb-6 fade-in">Ma bibliothèque</h1>
-              <div className="playlist-grid fade-in" style={{ animationDelay: '0.2s' }}>
-                {/* 4. 🖼️ Affichage des playlists */}
-                {userPlaylists.map((playlist) => (
-                  <div
-                    key={playlist.id}
-                    className="playlist-card hover-scale"
-                    onClick={() => {
-                      setSelectedPlaylist(playlist);
-                      setShowPlaylist(true);
-                    }}
-                  >
-                    <Playlist key={playlist.id} {...playlist} />
-                  </div>
-                ))}
-                <div 
-                  className="playlist-card hover-scale flex flex-col items-center justify-center cursor-pointer"
-                  onClick={() => handleNavigate('create')}
-                >
-                  <div className="w-16 h-16 rounded-full bg-spotify-green flex items-center justify-center text-3xl mb-4">+</div>
-                  <div className="text-center font-bold">Créer une nouvelle playlist</div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activePage === 'discover' && (
-            <div className="page-transition-enter-active">
-              <h1 className="text-3xl font-bold mb-6 fade-in">Découvrir</h1>
-              
-              <div className="mb-8 fade-in" style={{ animationDelay: '0.2s' }}>
-                <h2 className="text-2xl font-bold mb-4">Playlists populaires</h2>
-                <div className="playlist-grid">
-                  {discoverPlaylists.slice(0, 4).map(playlist => (
-                    <div key={playlist.id} className="playlist-card hover-scale" onClick={() => setShowPlaylist(true)}>
-                      <div className="playlist-card-image bg-gray-700"></div>
-                      <div className="playlist-card-title">{playlist.title}</div>
-                      <div className="playlist-card-description">Par {playlist.creator}</div>
-                      <div className="mt-2 flex justify-between text-sm">
-                        <span>{playlist.tracks} titres</span>
-                        <span>❤️ {playlist.likes}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              
-              <div className="mb-8 fade-in" style={{ animationDelay: '0.4s' }}>
-                <h2 className="text-2xl font-bold mb-4">Nouveautés</h2>
-                <div className="playlist-grid">
-                  {discoverPlaylists.slice(2, 6).map(playlist => (
-                    <div key={playlist.id} className="playlist-card hover-scale" onClick={() => setShowPlaylist(true)}>
-                      <div className="playlist-card-image bg-gray-700"></div>
-                      <div className="playlist-card-title">{playlist.title}</div>
-                      <div className="playlist-card-description">Par {playlist.creator}</div>
-                      <div className="mt-2 flex justify-between text-sm">
-                        <span>{playlist.tracks} titres</span>
-                        <span>❤️ {playlist.likes}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {showQuestionnaire && (
-            <div className="page-transition-enter-active">
-              <QuestionnaireForm 
-                duration={questionnaireDuration} 
-                onComplete={handleQuestionnaireComplete} 
-              />
-            </div>
-          )}
-
-          {showPlaylist && selectedPlaylist && (
-            <div className="page-transition-enter-active">
-              <Playlist 
-                title={selectedPlaylist.title}
-                description={selectedPlaylist.description}
-                tracks={selectedPlaylist.tracks}
-                editable={true}
-                onSaveToSpotify={handleSaveToSpotify}
-                onShare={handleSharePlaylist}
-                onRemoveTrack={handleRemoveTrack}
-              />
-              <div className="mt-6 text-center">
-                <button 
-                  className="btn-secondary hover-scale"
-                  onClick={() => setShowPlaylist(false)}
-                >
-                  Retour
-                </button>
-              </div>
-            </div>
-          )}
-
-          {showAuth && (
-            <div className="page-transition-enter-active">
-              <div className="max-w-md mx-auto">
-                <AuthForm onSuccess={handleAuthSuccess} />
-                <div className="mt-6 text-center">
-                  <button 
-                    className="btn-secondary hover-scale"
-                    onClick={() => setShowAuth(false)}
-                  >
-                    Retour
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {showAdmin && (
-            <div className="page-transition-enter-active">
-              <div className="max-w-6xl mx-auto">
-                <AdminPanel 
-                  stats={adminStats}
-                  publicPlaylists={publicPlaylists}
-                  onDeletePlaylist={(id) => console.log('Delete playlist:', id)}
-                  onToggleVip={(userId, isVip) => console.log('Toggle VIP:', userId, isVip)}
-                />
-                <div className="mt-6 text-center">
-                  <button 
-                    className="btn-secondary hover-scale"
-                    onClick={() => setShowAdmin(false)}
-                  >
-                    Retour
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      <footer className="footer theme-transition">
-        <div className="footer-links">
-          <button className="footer-link">Mentions légales</button>
-          <button className="footer-link">Confidentialité</button>
-          <button className="footer-link">Contact</button>
-        </div>
-        <div className="footer-copyright">
-          © 2025 Sonetica. Tous droits réservés.
-        </div>
-      </footer>
-
+      <main className="flex-grow">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/connexion" element={<LoginPage />} />
+          <Route path="/bibliotheque" element={<LibraryPage />} />
+          <Route path="/creer" element={<CreatePage />} />
+          <Route path="/decouvrir" element={<DiscoverPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/mentions-legales" element={<LegalPage />} />
+          <Route path="/confidentialite" element={<PrivacyPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </main>
+      <Footer />
       {/* Modales */}
       {showShareModal && selectedPlaylist && (
         <ShareModal
