@@ -19,6 +19,7 @@ import AdminPanel from './components/AdminPanel';
 import './styles/spotify-theme.css';
 import './styles/animations.css';
 import { generatePlaylist } from './lib/AIGenerator';
+import CallbackPage from './pages/CallbackPage';
 
 // 1. 🧱 Playlist par défaut
 const defaultPlaylist = {
@@ -174,6 +175,7 @@ function App() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/mentions-legales" element={<LegalPage />} />
           <Route path="/confidentialite" element={<PrivacyPage />} />
+          <Route path="/callback" element={<CallbackPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>
